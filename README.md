@@ -24,7 +24,7 @@
 ## 🚀 快速开始
 
 ### 在线体验
-访问：[https://LinRiley.top【还未搭建好】](https://LinRiey.top)
+访问：[https://linriley.github.io/4kMusicTraining](https://linriley.github.io/4kMusicTraining）
 
 ### 本地运行
 1. 下载所有文件到同一文件夹
@@ -107,5 +107,6 @@
 ---
 
 *最后更新：2025年11月*
+
 
 
