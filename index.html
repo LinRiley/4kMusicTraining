@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全屏音游底力训练器</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎵</text></svg>">
+    <title>4k音游底力训练</title>
     <style>
         * {
             margin: 0;
@@ -143,29 +144,33 @@
         }
         
         #toggleSidebar {
-            position: absolute;
+            position: fixed;
             top: 50%;
-            right: -40px;
+            left: 300px; /* 初始位置在侧边栏右侧 */
             transform: translateY(-50%);
-            width: 40px;
-            height: 80px;
+            width: 20px;
+            height: 60px;
             background: rgba(0, 0, 0, 0.7);
             border: none;
-            border-radius: 0 10px 10px 0;
+            border-radius: 0 5px 5px 0;
             color: white;
-            font-size: 18px;
+            font-size: 12px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-            z-index: 5;
+            z-index: 20;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .sidebar.collapsed + #toggleSidebar {
+            left: 60px; /* 侧边栏收起时的位置 */
         }
         
         #toggleSidebar:hover {
             background: rgba(0, 0, 0, 0.9);
-            width: 45px;
+            width: 25px;
         }
         
         #gameCanvas {
@@ -173,6 +178,8 @@
             height: 100%;
             background: #1a1a2e;
             display: block;
+            /* 防止移动端默认触摸行为 */
+            touch-action: none;
         }
         
         .game-stats {
@@ -462,11 +469,21 @@
             -ms-user-select: none;
             user-select: none;
         }
+        
+        /* 移动端触摸反馈 */
+        .touch-feedback {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            pointer-events: none;
+            z-index: 15;
+            transition: opacity 0.2s;
+        }
     </style>
 </head>
 <body class="no-context-menu">
     <div class="sidebar" id="sidebar">
-        <h1>🎵 音游训练器 🎵</h1>
+        <h1>🎵4k底力训练🎵</h1>
         
         <div class="control-group">
             <label>BPM（每分钟节拍数）</label>
@@ -518,6 +535,7 @@
         </div>
     </div>
     
+    <!-- 侧边栏收纳按钮放在侧边栏外部 -->
     <button id="toggleSidebar">◀</button>
     
     <div class="game-area">
@@ -560,7 +578,7 @@
         <div class="judgement-display" id="judgementDisplay"></div>
         <div class="combo-display" id="comboDisplay"></div>
         <div class="start-hint" id="startHint" style="display: none;">
-            <h2>🎵 音游底力训练器 🎵</h2>
+            <h2>🎵 4k音游底力训练器 🎵</h2>
             <p style="margin: 20px 0; font-size: 28px;">按下空格键开始音符下落</p>
             <div style="font-size: 18px; line-height: 1.8;">
                 <p>🎯 分数: PERFECT:100 | GREAT:80 | GOOD:60 | MISS:0</p>
@@ -625,7 +643,11 @@
                 duration: 100
             },
             waitingForSpace: false,
-            soundEnabled: true
+            soundEnabled: true,
+            // 移动端触摸相关
+            touchActive: false,
+            currentTouchLane: -1,
+            touchFeedback: null
         };
 
         // 获取HTML元素
@@ -751,6 +773,9 @@
                 // 设置键盘和触摸事件
                 setupInputEvents();
                 
+                // 创建触摸反馈元素
+                createTouchFeedback();
+                
                 // 初始绘制
                 drawGame();
                 
@@ -760,6 +785,38 @@
                 console.error('❌ 初始化失败:', error);
                 alert('游戏初始化失败: ' + error.message);
             }
+        }
+
+        // 创建触摸反馈元素
+        function createTouchFeedback() {
+            game.touchFeedback = document.createElement('div');
+            game.touchFeedback.className = 'touch-feedback';
+            game.touchFeedback.style.display = 'none';
+            document.querySelector('.game-area').appendChild(game.touchFeedback);
+        }
+
+        // 显示触摸反馈
+        function showTouchFeedback(lane) {
+            if (!game.touchFeedback) return;
+            
+            const laneWidth = canvas.width / 4;
+            const x = lane * laneWidth;
+            
+            game.touchFeedback.style.left = x + 'px';
+            game.touchFeedback.style.width = laneWidth + 'px';
+            game.touchFeedback.style.height = canvas.height + 'px';
+            game.touchFeedback.style.display = 'block';
+            game.touchFeedback.style.opacity = '1';
+        }
+
+        // 隐藏触摸反馈
+        function hideTouchFeedback() {
+            if (!game.touchFeedback) return;
+            
+            game.touchFeedback.style.opacity = '0';
+            setTimeout(() => {
+                game.touchFeedback.style.display = 'none';
+            }, 200);
         }
 
         // 调整canvas尺寸
@@ -921,6 +978,10 @@
                 const sidebar = document.getElementById('sidebar');
                 sidebar.classList.toggle('collapsed');
                 this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                
+                // 更新按钮位置
+                const newLeft = sidebar.classList.contains('collapsed') ? 60 : 300;
+                this.style.left = newLeft + 'px';
             });
             
             // 音效切换
@@ -958,9 +1019,17 @@
             document.addEventListener('keydown', handleKeyDown);
             document.addEventListener('keyup', handleKeyUp);
             
+            // 移动端触摸事件
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+            canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+            
             // 防止页面滚动
             document.addEventListener('touchmove', function(e) {
-                e.preventDefault();
+                if (e.target === canvas) {
+                    e.preventDefault();
+                }
             }, { passive: false });
             
             document.addEventListener('keydown', function(e) {
@@ -974,6 +1043,57 @@
                 e.preventDefault();
                 return false;
             });
+        }
+
+        // 处理触摸开始
+        function handleTouchStart(event) {
+            if (!game.isPlaying || game.waitingForSpace) return;
+            
+            event.preventDefault();
+            game.touchActive = true;
+            
+            const touch = event.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const lane = Math.floor(x / (canvas.width / 4));
+            
+            game.currentTouchLane = lane;
+            game.keyPressEffect.lane = lane;
+            game.keyPressEffect.time = Date.now();
+            
+            showTouchFeedback(lane);
+            checkHit(lane);
+        }
+
+        // 处理触摸移动
+        function handleTouchMove(event) {
+            if (!game.touchActive || !game.isPlaying || game.waitingForSpace) return;
+            
+            event.preventDefault();
+            
+            const touch = event.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const lane = Math.floor(x / (canvas.width / 4));
+            
+            // 如果移动到新的轨道，触发该轨道的按键
+            if (lane !== game.currentTouchLane) {
+                game.currentTouchLane = lane;
+                game.keyPressEffect.lane = lane;
+                game.keyPressEffect.time = Date.now();
+                
+                showTouchFeedback(lane);
+                checkHit(lane);
+            }
+        }
+
+        // 处理触摸结束
+        function handleTouchEnd(event) {
+            event.preventDefault();
+            game.touchActive = false;
+            game.currentTouchLane = -1;
+            game.keyPressEffect.lane = -1;
+            hideTouchFeedback();
         }
 
         // 获取判定线Y坐标
@@ -1064,6 +1184,8 @@
             game.missCount = 0;
             game.keyPressEffect.lane = -1;
             game.waitingForSpace = false;
+            game.touchActive = false;
+            game.currentTouchLane = -1;
         }
 
         // 开始音符生成
@@ -1502,7 +1624,7 @@
         // 页面加载完成后初始化游戏
         window.addEventListener('load', initGame);
 
-        console.log('🎮 全屏音游训练器加载完成');
+        console.log('🎮 4k音游底力训练器加载完成');
     </script>
 </body>
 </html>
