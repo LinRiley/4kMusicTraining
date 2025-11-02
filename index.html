@@ -10,7 +10,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            /* 防止文字选择 */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -146,7 +145,7 @@
         #toggleSidebar {
             position: fixed;
             top: 50%;
-            left: 300px; /* 初始位置在侧边栏右侧 */
+            left: 300px;
             transform: translateY(-50%);
             width: 20px;
             height: 60px;
@@ -165,7 +164,7 @@
         }
         
         .sidebar.collapsed + #toggleSidebar {
-            left: 60px; /* 侧边栏收起时的位置 */
+            left: 60px;
         }
         
         #toggleSidebar:hover {
@@ -178,7 +177,6 @@
             height: 100%;
             background: #1a1a2e;
             display: block;
-            /* 防止移动端默认触摸行为 */
             touch-action: none;
         }
         
@@ -319,7 +317,6 @@
             margin-bottom: 10px;
         }
         
-        /* BPM数字输入框样式 */
         .bpm-input-container {
             display: flex;
             align-items: center;
@@ -336,7 +333,6 @@
             color: white;
             font-size: 16px;
             text-align: center;
-            /* 允许输入框内文字选择 */
             -webkit-user-select: text;
             -moz-user-select: text;
             -ms-user-select: text;
@@ -354,7 +350,6 @@
             font-size: 14px;
         }
         
-        /* 赞助弹窗样式 */
         .sponsor-modal {
             display: none;
             position: fixed;
@@ -452,7 +447,6 @@
             font-size: 18px;
         }
         
-        /* 防止拖拽选择 */
         .no-select {
             -webkit-user-select: none;
             -moz-user-select: none;
@@ -460,7 +454,6 @@
             user-select: none;
         }
         
-        /* 防止右键菜单 */
         .no-context-menu {
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -470,7 +463,6 @@
             user-select: none;
         }
         
-        /* 移动端触摸反馈 */
         .touch-feedback {
             position: absolute;
             background: rgba(255, 255, 255, 0.3);
@@ -478,6 +470,107 @@
             pointer-events: none;
             z-index: 15;
             transition: opacity 0.2s;
+        }
+
+        /* 移动端开始按钮 */
+        .mobile-start-btn {
+            display: none;
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-start-btn:hover {
+            background: #218838;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            .mobile-start-btn {
+                display: block;
+            }
+            
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                height: 100%;
+                z-index: 30;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            #toggleSidebar {
+                left: 0;
+                transform: translateY(-50%);
+                border-radius: 0 5px 5px 0;
+                width: 25px;
+                height: 80px;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 35;
+            }
+            
+            .sidebar.open + #toggleSidebar {
+                left: 100%;
+                transform: translate(-100%, -50%);
+                border-radius: 5px 0 0 5px;
+            }
+            
+            .game-stats {
+                flex-wrap: wrap;
+                padding: 5px 10px;
+            }
+            
+            .stat-item {
+                flex: 1 0 25%;
+                margin-bottom: 5px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .start-hint {
+                padding: 20px;
+                font-size: 18px;
+            }
+            
+            .start-hint h2 {
+                font-size: 22px;
+            }
+            
+            /* 移动端开始按钮在提示框内 */
+            .hint-start-btn {
+                display: block;
+                margin: 20px auto;
+                padding: 12px 25px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                pointer-events: auto;
+            }
         }
     </style>
 </head>
@@ -577,9 +670,14 @@
         <canvas id="gameCanvas"></canvas>
         <div class="judgement-display" id="judgementDisplay"></div>
         <div class="combo-display" id="comboDisplay"></div>
+        
+        <!-- 移动设备专用开始按钮 -->
+        <button class="mobile-start-btn" id="mobileStartBtn">开始下落</button>
+        
         <div class="start-hint" id="startHint" style="display: none;">
             <h2>🎵 4k音游底力训练器 🎵</h2>
-            <p style="margin: 20px 0; font-size: 28px;">按下空格键开始音符下落</p>
+            <p style="margin: 20px 0; font-size: 28px;">按下空格键或点击下方按钮开始音符下落</p>
+            <button class="hint-start-btn" id="hintStartBtn">开始下落</button>
             <div style="font-size: 18px; line-height: 1.8;">
                 <p>🎯 分数: PERFECT:100 | GREAT:80 | GOOD:60 | MISS:0</p>
                 <p>⏸️ 空格键: 开始/暂停游戏</p>
@@ -647,7 +745,9 @@
             // 移动端触摸相关
             touchActive: false,
             currentTouchLane: -1,
-            touchFeedback: null
+            touchFeedback: null,
+            // 侧边栏状态
+            sidebarCollapsed: false
         };
 
         // 获取HTML元素
@@ -660,6 +760,7 @@
         let perfectCountDisplay, greatCountDisplay, goodCountDisplay, missCountDisplay;
         let judgementDisplay, startHint, comboDisplayElement, currentSettings;
         let sponsorModal, closeSponsorModal;
+        let mobileStartBtn, hintStartBtn;
 
         // 音效
         let audioContext;
@@ -735,6 +836,10 @@
                 toggleSidebar = document.getElementById('toggleSidebar');
                 soundToggle = document.getElementById('soundToggle');
                 sponsorBtn = document.getElementById('sponsorBtn');
+                
+                // 获取移动端按钮
+                mobileStartBtn = document.getElementById('mobileStartBtn');
+                hintStartBtn = document.getElementById('hintStartBtn');
                 
                 // 获取统计元素
                 scoreDisplay = document.getElementById('score');
@@ -973,15 +1078,53 @@
             pauseBtn.addEventListener('click', pauseGame);
             resetBtn.addEventListener('click', resetGame);
             
+            // 移动端开始按钮 - 映射为空格键事件
+            mobileStartBtn.addEventListener('click', function() {
+                // 创建并触发空格键按下事件
+                const spaceEvent = new KeyboardEvent('keydown', {
+                    code: 'Space',
+                    key: ' ',
+                    keyCode: 32,
+                    which: 32,
+                    bubbles: true
+                });
+                document.dispatchEvent(spaceEvent);
+            });
+            
+            hintStartBtn.addEventListener('click', function() {
+                // 创建并触发空格键按下事件
+                const spaceEvent = new KeyboardEvent('keydown', {
+                    code: 'Space',
+                    key: ' ',
+                    keyCode: 32,
+                    which: 32,
+                    bubbles: true
+                });
+                document.dispatchEvent(spaceEvent);
+            });
+            
             // 侧边栏切换
             toggleSidebar.addEventListener('click', function() {
                 const sidebar = document.getElementById('sidebar');
-                sidebar.classList.toggle('collapsed');
-                this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+                const isMobile = window.innerWidth <= 768;
                 
-                // 更新按钮位置
-                const newLeft = sidebar.classList.contains('collapsed') ? 60 : 300;
-                this.style.left = newLeft + 'px';
+                if (isMobile) {
+                    // 移动端：侧边栏滑动
+                    sidebar.classList.toggle('open');
+                    this.textContent = sidebar.classList.contains('open') ? '▶' : '◀';
+                } else {
+                    // 桌面端：侧边栏收起/展开
+                    sidebar.classList.toggle('collapsed');
+                    game.sidebarCollapsed = sidebar.classList.contains('collapsed');
+                    this.textContent = game.sidebarCollapsed ? '▶' : '◀';
+                    
+                    // 更新按钮位置
+                    const newLeft = game.sidebarCollapsed ? 60 : 300;
+                    this.style.left = newLeft + 'px';
+                }
+                
+                // 重新调整canvas大小
+                setTimeout(resizeCanvas, 300);
             });
             
             // 音效切换
@@ -1055,7 +1198,19 @@
             const touch = event.touches[0];
             const rect = canvas.getBoundingClientRect();
             const x = touch.clientX - rect.left;
-            const lane = Math.floor(x / (canvas.width / 4));
+            
+            // 修复侧边栏收起时的触摸定位问题
+            let adjustedX = x;
+            if (game.sidebarCollapsed && window.innerWidth > 768) {
+                // 侧边栏收起时，canvas左侧有60px的侧边栏空间
+                adjustedX = x - 60;
+            }
+            
+            const laneWidth = canvas.width / 4;
+            const lane = Math.floor(adjustedX / laneWidth);
+            
+            // 确保lane在有效范围内
+            if (lane < 0 || lane > 3) return;
             
             game.currentTouchLane = lane;
             game.keyPressEffect.lane = lane;
@@ -1074,7 +1229,18 @@
             const touch = event.touches[0];
             const rect = canvas.getBoundingClientRect();
             const x = touch.clientX - rect.left;
-            const lane = Math.floor(x / (canvas.width / 4));
+            
+            // 修复侧边栏收起时的触摸定位问题
+            let adjustedX = x;
+            if (game.sidebarCollapsed && window.innerWidth > 768) {
+                adjustedX = x - 60;
+            }
+            
+            const laneWidth = canvas.width / 4;
+            const lane = Math.floor(adjustedX / laneWidth);
+            
+            // 确保lane在有效范围内
+            if (lane < 0 || lane > 3) return;
             
             // 如果移动到新的轨道，触发该轨道的按键
             if (lane !== game.currentTouchLane) {
@@ -1111,6 +1277,7 @@
                     console.log('🎵 开始音符生成');
                     game.waitingForSpace = false;
                     startHint.style.display = 'none';
+                    mobileStartBtn.style.display = 'none';
                     startNoteGeneration();
                 } else if (game.isPlaying) {
                     console.log('⏸️ 暂停/继续游戏');
@@ -1161,6 +1328,12 @@
             
             updateStats();
             startHint.style.display = 'block';
+            
+            // 显示移动端开始按钮
+            if (window.innerWidth <= 768) {
+                mobileStartBtn.style.display = 'block';
+            }
+            
             gameLoop();
             
             startBtn.textContent = "游戏中...";
@@ -1243,6 +1416,7 @@
             drawGame();
             
             startHint.style.display = 'none';
+            mobileStartBtn.style.display = 'none';
             startBtn.textContent = "开始训练";
             startBtn.disabled = false;
             pauseBtn.textContent = "暂停";
@@ -1286,7 +1460,18 @@
             
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
-            const clickLane = Math.floor(x / (canvas.width / 4));
+            
+            // 修复侧边栏收起时的点击定位问题
+            let adjustedX = x;
+            if (game.sidebarCollapsed && window.innerWidth > 768) {
+                adjustedX = x - 60;
+            }
+            
+            const laneWidth = canvas.width / 4;
+            const clickLane = Math.floor(adjustedX / laneWidth);
+            
+            // 确保lane在有效范围内
+            if (clickLane < 0 || clickLane > 3) return;
             
             game.keyPressEffect.lane = clickLane;
             game.keyPressEffect.time = Date.now();
