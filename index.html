@@ -1697,7 +1697,7 @@
             // 确保BPM有效
             const safeBPM = Math.max(60, Math.min(9999, currentBPM));
             // 每拍的时间（毫秒），这里使用四分音符间隔
-            return (120000 / safeBPM);
+            return (60000 / safeBPM);
         }
 
         // 开始训练模式
@@ -1740,7 +1740,7 @@
             game.isPlaying = true;
             game.waitingForSpace = true;
             game.challengeMode = true;
-            game.challengeBPM = 240; // 重置为初始值
+            game.challengeBPM = 120; // 重置为初始值
             game.challengeStartTime = Date.now(); // 记录挑战开始时间
             
             updateStats();
@@ -2172,7 +2172,7 @@
                 // 计算从挑战开始经过的时间（秒）
                 const elapsedSeconds = (Date.now() - game.challengeStartTime) / 1000;
                 // 每秒增加10BPM
-                game.challengeBPM = 240 + (elapsedSeconds * 10);
+                game.challengeBPM = 120 + (elapsedSeconds * 5);
                 if (game.challengeBPM > 9999) game.challengeBPM = 9999;
                 currentBPM.textContent = Math.round(game.challengeBPM);
             }
