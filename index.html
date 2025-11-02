@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全屏音游底力训练器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* 防止文字选择 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            color: white;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            z-index: 10;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .game-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #FFD700;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: #dee2e6;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            color: #FFD700;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #startBtn {
+            background: #28a745;
+            color: white;
+        }
+        
+        #startBtn:hover {
+            background: #218838;
+        }
+        
+        #pauseBtn {
+            background: #ffc107;
+            color: black;
+        }
+        
+        #pauseBtn:hover {
+            background: #e0a800;
+        }
+        
+        #resetBtn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            background: #c82333;
+        }
+        
+        #soundToggle {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        #soundToggle:hover {
+            background: #138496;
+        }
+        
+        #sponsorBtn {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        #sponsorBtn:hover {
+            background: #8e44ad;
+        }
+        
+        #toggleSidebar {
+            position: absolute;
+            top: 50%;
+            right: -40px;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 0 10px 10px 0;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 5;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        #toggleSidebar:hover {
+            background: rgba(0, 0, 0, 0.9);
+            width: 45px;
+        }
+        
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            background: #1a1a2e;
+            display: block;
+        }
+        
+        .game-stats {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 5;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #ccc;
+            margin-top: 2px;
+        }
+        
+        .judgement-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            font-weight: bold;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 5;
+            text-align: center;
+        }
+
+        .judgement-subtext {
+            font-size: 36px;
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .judgement-visual {
+            height: 20px;
+            background: linear-gradient(90deg, 
+                #e74c3c 0%, 
+                #e74c3c 20%, 
+                #3498db 20%, 
+                #3498db 40%, 
+                #00FF00 40%, 
+                #00FF00 60%, 
+                #FFD700 60%, 
+                #FFD700 80%, 
+                #e74c3c 80%, 
+                #e74c3c 100%);
+            border-radius: 10px;
+            margin-top: 5px;
+            position: relative;
+        }
+        
+        .judgement-center {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 30px;
+            background: #FFFFFF;
+        }
+
+        .start-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 30px 60px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 24px;
+            z-index: 10;
+            pointer-events: none;
+            width: 80%;
+            max-width: 600px;
+        }
+        
+        .combo-display {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
+        .sidebar.collapsed {
+            width: 60px;
+            overflow: hidden;
+            padding: 10px;
+        }
+        
+        .sidebar.collapsed .control-group,
+        .sidebar.collapsed .button-group,
+        .sidebar.collapsed h1 {
+            display: none;
+        }
+        
+        .sidebar.collapsed .button-group {
+            align-items: center;
+        }
+        
+        .sidebar.collapsed button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+        
+        /* BPM数字输入框样式 */
+        .bpm-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .bpm-input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            /* 允许输入框内文字选择 */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+        
+        .bpm-input:focus {
+            outline: none;
+            border-color: #FFD700;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .bpm-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+        
+        /* 赞助弹窗样式 */
+        .sponsor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sponsor-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            color: #333;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .sponsor-content h2 {
+            margin-bottom: 20px;
+            color: #9b59b6;
+        }
+        
+        .sponsor-content p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .qr-codes {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .close-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        .close-btn:hover {
+            background: #c82333;
+        }
+        
+        .cat-girl-text {
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            text-align: left;
+            margin-bottom: 20px;
+            background: #f9f0ff;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #9b59b6;
+        }
+        
+        .cat-girl-text::before {
+            content: "🐱 ";
+            font-size: 18px;
+        }
+        
+        /* 防止拖拽选择 */
+        .no-select {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* 防止右键菜单 */
+        .no-context-menu {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="no-context-menu">
+    <div class="sidebar" id="sidebar">
+        <h1>🎵 音游训练器 🎵</h1>
+        
+        <div class="control-group">
+            <label>BPM（每分钟节拍数）</label>
+            <div class="bpm-input-container">
+                <input type="number" id="bpmInput" class="bpm-input" placeholder="60~1200" min="60" max="1200" value="120">
+                <span>BPM</span>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>方块流速</label>
+            <input type="range" id="speedSlider" min="0.5" max="5.0" value="1.0" step="0.1">
+            <div class="value-display">
+                <span>0.5x</span>
+                <span id="speedValue">1.0x</span>
+                <span>5.0x</span>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>判定区域大小</label>
+            <input type="range" id="judgementSlider" min="1" max="10" value="8" step="1">
+            <div class="value-display">
+                <span>严格</span>
+                <span id="judgementValue">宽松</span>
+                <span>宽松</span>
+            </div>
+            <div class="judgement-visual">
+                <div class="judgement-center"></div>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>判定线位置</label>
+            <input type="range" id="linePositionSlider" min="20" max="80" value="70" step="5">
+            <div class="value-display">
+                <span>底部</span>
+                <span id="linePositionValue">70%</span>
+                <span>顶部</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button id="startBtn">开始训练</button>
+            <button id="pauseBtn">暂停</button>
+            <button id="resetBtn">重置</button>
+            <button id="soundToggle">音效: 开启</button>
+            <button id="sponsorBtn">赞助支持</button>
+        </div>
+    </div>
+    
+    <button id="toggleSidebar">◀</button>
+    
+    <div class="game-area">
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">分数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="combo">0</div>
+                <div class="stat-label">连击</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="maxCombo">0</div>
+                <div class="stat-label">最大连击</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">100%</div>
+                <div class="stat-label">准确率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="perfectCount">0</div>
+                <div class="stat-label">PERFECT</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="greatCount">0</div>
+                <div class="stat-label">GREAT</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="goodCount">0</div>
+                <div class="stat-label">GOOD</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="missCount">0</div>
+                <div class="stat-label">MISS</div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+        <div class="judgement-display" id="judgementDisplay"></div>
+        <div class="combo-display" id="comboDisplay"></div>
+        <div class="start-hint" id="startHint" style="display: none;">
+            <h2>🎵 音游底力训练器 🎵</h2>
+            <p style="margin: 20px 0; font-size: 28px;">按下空格键开始音符下落</p>
+            <div style="font-size: 18px; line-height: 1.8;">
+                <p>🎯 分数: PERFECT:100 | GREAT:80 | GOOD:60 | MISS:0</p>
+                <p>⏸️ 空格键: 开始/暂停游戏</p>
+                <p id="currentSettings">⚡ BPM: 120 | 流速: 1.0x</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 赞助弹窗 -->
+    <div class="sponsor-modal" id="sponsorModal">
+        <div class="sponsor-content">
+            <h2>喵~ 感谢您喜欢这个音游训练器！</h2>
+            
+            <div class="cat-girl-text">
+                喵呜~ 阁下玩得开心吗？对您的底力提升有帮助的话，可以考虑赞助支持一下喵~<br><br>
+                
+                您的支持将帮助我继续改进和开发更多有趣的功能的喵！<br><br>
+                
+                祝您早日达成全连FC，冲击AP全完美！
+            </div>
+            
+            <div class="qr-codes">
+                <div class="qr-code">
+                    <img src="WeChatQRCode.jpg" alt="微信收款码">
+                    <span>微信支付</span>
+                </div>
+                <div class="qr-code">
+                    <img src="AlipayQRCode.jpg" alt="支付宝收款码">
+                    <span>支付宝</span>
+                </div>
+            </div>
+            
+            <p>扫描上方二维码进行赞助，感谢您的支持喵~</p>
+            <button class="close-btn" id="closeSponsorModal">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏核心变量
+        let game = {
+            bpm: 120,
+            speed: 1.0,
+            judgementLevel: 8,
+            linePosition: 70,
+            isPlaying: false,
+            notes: [],
+            score: 0,
+            combo: 0,
+            maxCombo: 0,
+            hitCount: 0,
+            totalNotes: 0,
+            perfectCount: 0,
+            greatCount: 0,
+            goodCount: 0,
+            missCount: 0,
+            noteInterval: null,
+            animationFrame: null,
+            keyPressEffect: {
+                lane: -1,
+                time: 0,
+                duration: 100
+            },
+            waitingForSpace: false,
+            soundEnabled: true
+        };
+
+        // 获取HTML元素
+        let canvas, ctx;
+        let bpmInput;
+        let speedSlider, judgementSlider, linePositionSlider;
+        let speedValue, judgementValue, linePositionValue;
+        let startBtn, pauseBtn, resetBtn, toggleSidebar, soundToggle, sponsorBtn;
+        let scoreDisplay, comboDisplay, accuracyDisplay, maxComboDisplay;
+        let perfectCountDisplay, greatCountDisplay, goodCountDisplay, missCountDisplay;
+        let judgementDisplay, startHint, comboDisplayElement, currentSettings;
+        let sponsorModal, closeSponsorModal;
+
+        // 音效
+        let audioContext;
+        let soundBuffers = {};
+
+        // 键盘映射
+        const KEY_MAPPING = {
+            'KeyD': 0,
+            'KeyF': 1,  
+            'KeyJ': 2,
+            'KeyK': 3
+        };
+
+        // 判定窗口配置
+        const JUDGEMENT_CONFIG = {
+            1: { perfect: 15, great: 30, good: 45 },
+            2: { perfect: 18, great: 36, good: 54 },
+            3: { perfect: 21, great: 42, good: 63 },
+            4: { perfect: 24, great: 48, good: 72 },
+            5: { perfect: 27, great: 54, good: 81 },
+            6: { perfect: 30, great: 60, good: 90 },
+            7: { perfect: 33, great: 66, good: 99 },
+            8: { perfect: 36, great: 72, good: 108 },
+            9: { perfect: 39, great: 78, good: 117 },
+            10: { perfect: 42, great: 84, good: 126 }
+        };
+
+        // 判定文字描述
+        const JUDGEMENT_LABELS = {
+            1: "超严格", 2: "严格", 3: "较严格", 4: "稍严格", 5: "中等",
+            6: "稍宽松", 7: "较宽松", 8: "宽松", 9: "很宽松", 10: "超宽松"
+        };
+
+        // 分数配置
+        const SCORE_CONFIG = {
+            PERFECT: 100,
+            GREAT: 80,
+            GOOD: 60,
+            MISS: 0
+        };
+
+        // 初始化游戏
+        function initGame() {
+            console.log('🎮 开始初始化游戏...');
+            
+            try {
+                // 获取所有HTML元素
+                canvas = document.getElementById('gameCanvas');
+                if (!canvas) throw new Error('找不到canvas元素');
+                
+                // 设置canvas尺寸为全屏
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                
+                ctx = canvas.getContext('2d');
+                if (!ctx) throw new Error('无法获取canvas上下文');
+                
+                // 获取输入元素
+                bpmInput = document.getElementById('bpmInput');
+                speedSlider = document.getElementById('speedSlider');
+                judgementSlider = document.getElementById('judgementSlider');
+                linePositionSlider = document.getElementById('linePositionSlider');
+                
+                // 获取显示元素
+                speedValue = document.getElementById('speedValue');
+                judgementValue = document.getElementById('judgementValue');
+                linePositionValue = document.getElementById('linePositionValue');
+                
+                // 获取按钮元素
+                startBtn = document.getElementById('startBtn');
+                pauseBtn = document.getElementById('pauseBtn');
+                resetBtn = document.getElementById('resetBtn');
+                toggleSidebar = document.getElementById('toggleSidebar');
+                soundToggle = document.getElementById('soundToggle');
+                sponsorBtn = document.getElementById('sponsorBtn');
+                
+                // 获取统计元素
+                scoreDisplay = document.getElementById('score');
+                comboDisplay = document.getElementById('combo');
+                accuracyDisplay = document.getElementById('accuracy');
+                maxComboDisplay = document.getElementById('maxCombo');
+                perfectCountDisplay = document.getElementById('perfectCount');
+                greatCountDisplay = document.getElementById('greatCount');
+                goodCountDisplay = document.getElementById('goodCount');
+                missCountDisplay = document.getElementById('missCount');
+                
+                // 获取其他元素
+                judgementDisplay = document.getElementById('judgementDisplay');
+                startHint = document.getElementById('startHint');
+                comboDisplayElement = document.getElementById('comboDisplay');
+                currentSettings = document.getElementById('currentSettings');
+                
+                // 获取赞助弹窗元素
+                sponsorModal = document.getElementById('sponsorModal');
+                closeSponsorModal = document.getElementById('closeSponsorModal');
+                
+                console.log('✅ 所有HTML元素获取成功');
+                
+                // 初始化音效
+                initAudio();
+                
+                // 设置初始值
+                updateSliderValues();
+                
+                // 设置输入事件
+                setupInputs();
+                
+                // 设置按钮事件
+                setupButtons();
+                
+                // 设置键盘和触摸事件
+                setupInputEvents();
+                
+                // 初始绘制
+                drawGame();
+                
+                console.log('🎉 游戏初始化完成！');
+                
+            } catch (error) {
+                console.error('❌ 初始化失败:', error);
+                alert('游戏初始化失败: ' + error.message);
+            }
+        }
+
+        // 调整canvas尺寸
+        function resizeCanvas() {
+            const gameArea = document.querySelector('.game-area');
+            canvas.width = gameArea.clientWidth;
+            canvas.height = gameArea.clientHeight;
+            
+            // 重新绘制游戏
+            if (ctx) {
+                drawGame();
+            }
+        }
+
+        // 初始化音效
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // 创建音效
+                createSound('perfect', 800, 0.3);
+                createSound('great', 600, 0.25);
+                createSound('good', 400, 0.2);
+                createSound('miss', 200, 0.3);
+                createSound('click', 300, 0.1);
+                
+                console.log('🔊 音效初始化成功');
+            } catch (e) {
+                console.error('❌ 音效初始化失败:', e);
+                game.soundEnabled = false;
+                soundToggle.textContent = '音效: 关闭';
+            }
+        }
+
+        // 创建音效
+        function createSound(name, frequency, duration) {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.5, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+            
+            // 存储音效
+            soundBuffers[name] = { oscillator, gainNode };
+        }
+
+        // 播放音效
+        function playSound(name) {
+            if (!game.soundEnabled || !audioContext) return;
+            
+            try {
+                createSound(name, 
+                    name === 'perfect' ? 800 : 
+                    name === 'great' ? 600 : 
+                    name === 'good' ? 400 : 
+                    name === 'miss' ? 200 : 300, 
+                    0.2);
+            } catch (e) {
+                console.error('播放音效失败:', e);
+            }
+        }
+
+        // 更新显示值
+        function updateSliderValues() {
+            speedValue.textContent = game.speed.toFixed(1) + 'x';
+            judgementValue.textContent = JUDGEMENT_LABELS[game.judgementLevel];
+            linePositionValue.textContent = game.linePosition + '%';
+            
+            // 更新开始提示中的设置
+            if (currentSettings) {
+                currentSettings.textContent = `⚡ BPM: ${game.bpm} | 流速: ${game.speed.toFixed(1)}x`;
+            }
+        }
+
+        // 安全输入验证函数
+        function sanitizeInput(value, min, max, defaultValue) {
+            // 转换为数字
+            let numValue = parseInt(value);
+            
+            // 检查是否为有效数字
+            if (isNaN(numValue)) {
+                return defaultValue;
+            }
+            
+            // 限制在有效范围内
+            numValue = Math.max(min, Math.min(max, numValue));
+            
+            return numValue;
+        }
+
+        // 更新BPM值
+        function updateBPM() {
+            let value = sanitizeInput(bpmInput.value, 60, 1200, 120);
+            game.bpm = value;
+            bpmInput.value = value; // 确保显示的是安全值
+            updateSliderValues();
+            
+            if (game.isPlaying && !game.waitingForSpace) {
+                restartGame();
+            }
+        }
+
+        // 设置输入事件
+        function setupInputs() {
+            // BPM输入框事件 - 只在失去焦点或按回车时更新
+            bpmInput.addEventListener('blur', function() {
+                updateBPM();
+            });
+            
+            // 按回车键时更新BPM
+            bpmInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    updateBPM();
+                    this.blur(); // 失去焦点，隐藏键盘（在移动设备上）
+                }
+            });
+
+            speedSlider.addEventListener('input', function() {
+                game.speed = parseFloat(this.value);
+                updateSliderValues();
+                if (game.isPlaying && !game.waitingForSpace) {
+                    restartGame();
+                }
+            });
+
+            judgementSlider.addEventListener('input', function() {
+                game.judgementLevel = parseInt(this.value);
+                updateSliderValues();
+                drawGame(); // 立即更新画面
+            });
+
+            linePositionSlider.addEventListener('input', function() {
+                game.linePosition = parseInt(this.value);
+                updateSliderValues();
+                drawGame(); // 立即更新画面
+            });
+        }
+
+        // 设置按钮事件
+        function setupButtons() {
+            startBtn.addEventListener('click', startGame);
+            pauseBtn.addEventListener('click', pauseGame);
+            resetBtn.addEventListener('click', resetGame);
+            
+            // 侧边栏切换
+            toggleSidebar.addEventListener('click', function() {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.toggle('collapsed');
+                this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
+            });
+            
+            // 音效切换
+            soundToggle.addEventListener('click', function() {
+                game.soundEnabled = !game.soundEnabled;
+                this.textContent = game.soundEnabled ? '音效: 开启' : '音效: 关闭';
+                playSound('click');
+            });
+            
+            // 赞助按钮
+            sponsorBtn.addEventListener('click', function() {
+                sponsorModal.style.display = 'flex';
+                playSound('click');
+            });
+            
+            // 关闭赞助弹窗
+            closeSponsorModal.addEventListener('click', function() {
+                sponsorModal.style.display = 'none';
+            });
+            
+            // 点击弹窗外部关闭
+            sponsorModal.addEventListener('click', function(e) {
+                if (e.target === sponsorModal) {
+                    sponsorModal.style.display = 'none';
+                }
+            });
+        }
+
+        // 设置输入事件
+        function setupInputEvents() {
+            // 画布点击事件
+            canvas.addEventListener('click', handleCanvasClick);
+            
+            // 键盘事件
+            document.addEventListener('keydown', handleKeyDown);
+            document.addEventListener('keyup', handleKeyUp);
+            
+            // 防止页面滚动
+            document.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                }
+            });
+            
+            // 防止右键菜单
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        }
+
+        // 获取判定线Y坐标
+        function getJudgementLineY() {
+            return canvas.height * (game.linePosition / 100);
+        }
+
+        // 处理键盘按下
+        function handleKeyDown(event) {
+            // 空格键处理
+            if (event.code === 'Space') {
+                event.preventDefault();
+                
+                if (game.waitingForSpace) {
+                    console.log('🎵 开始音符生成');
+                    game.waitingForSpace = false;
+                    startHint.style.display = 'none';
+                    startNoteGeneration();
+                } else if (game.isPlaying) {
+                    console.log('⏸️ 暂停/继续游戏');
+                    pauseGame();
+                } else {
+                    // 游戏暂停状态下按空格键继续游戏
+                    pauseGame();
+                }
+                return;
+            }
+            
+            if (!game.isPlaying || game.waitingForSpace) return;
+            
+            const lane = KEY_MAPPING[event.code];
+            if (lane !== undefined) {
+                game.keyPressEffect.lane = lane;
+                game.keyPressEffect.time = Date.now();
+                checkHit(lane);
+                event.preventDefault();
+            }
+        }
+
+        // 处理键盘释放
+        function handleKeyUp(event) {
+            const lane = KEY_MAPPING[event.code];
+            if (lane !== undefined && game.keyPressEffect.lane === lane) {
+                game.keyPressEffect.lane = -1;
+                event.preventDefault();
+            }
+        }
+
+        // 计算音符生成间隔
+        function calculateNoteInterval() {
+            return (60000 / game.bpm) * 2;
+        }
+
+        // 开始游戏
+        function startGame() {
+            console.log('🚀 开始游戏');
+            if (game.isPlaying) return;
+            
+            // 确保BPM是最新的
+            updateBPM();
+            
+            resetGameState();
+            game.isPlaying = true;
+            game.waitingForSpace = true;
+            
+            updateStats();
+            startHint.style.display = 'block';
+            gameLoop();
+            
+            startBtn.textContent = "游戏中...";
+            startBtn.disabled = true;
+            pauseBtn.textContent = "暂停";
+            
+            console.log('🔄 游戏循环启动，等待空格键...');
+        }
+
+        // 重置游戏状态
+        function resetGameState() {
+            game.notes = [];
+            game.score = 0;
+            game.combo = 0;
+            game.maxCombo = 0;
+            game.hitCount = 0;
+            game.totalNotes = 0;
+            game.perfectCount = 0;
+            game.greatCount = 0;
+            game.goodCount = 0;
+            game.missCount = 0;
+            game.keyPressEffect.lane = -1;
+            game.waitingForSpace = false;
+        }
+
+        // 开始音符生成
+        function startNoteGeneration() {
+            const interval = calculateNoteInterval();
+            console.log('📝 音符生成间隔:', interval + 'ms');
+            
+            if (game.noteInterval) {
+                clearInterval(game.noteInterval);
+            }
+            
+            game.noteInterval = setInterval(() => {
+                createNote();
+            }, interval);
+        }
+
+        // 暂停游戏
+        function pauseGame() {
+            if (game.waitingForSpace) return;
+            
+            console.log('⏸️ 切换暂停状态');
+            game.isPlaying = !game.isPlaying;
+            
+            if (!game.isPlaying) {
+                if (game.noteInterval) {
+                    clearInterval(game.noteInterval);
+                    game.noteInterval = null;
+                }
+                pauseBtn.textContent = "继续";
+            } else {
+                startNoteGeneration();
+                gameLoop(); // 重新开始游戏循环
+                pauseBtn.textContent = "暂停";
+            }
+        }
+
+        // 重置游戏
+        function resetGame() {
+            console.log('🔄 重置游戏');
+            game.isPlaying = false;
+            game.waitingForSpace = false;
+            
+            if (game.noteInterval) {
+                clearInterval(game.noteInterval);
+                game.noteInterval = null;
+            }
+            
+            if (game.animationFrame) {
+                cancelAnimationFrame(game.animationFrame);
+                game.animationFrame = null;
+            }
+            
+            resetGameState();
+            updateStats();
+            drawGame();
+            
+            startHint.style.display = 'none';
+            startBtn.textContent = "开始训练";
+            startBtn.disabled = false;
+            pauseBtn.textContent = "暂停";
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            console.log('🔄 重新开始游戏');
+            if (!game.isPlaying) return;
+            
+            const wasPlaying = game.isPlaying;
+            resetGame();
+            if (wasPlaying) {
+                startGame();
+            }
+        }
+
+        // 创建新音符
+        function createNote() {
+            const lane = Math.floor(Math.random() * 4);
+            const note = {
+                id: Date.now() + Math.random(),
+                lane: lane,
+                position: -50,
+                speed: 2 + (game.speed * 3),
+                hit: false,
+                missed: false,
+                judgement: null,
+                createTime: Date.now()
+            };
+            game.notes.push(note);
+            game.totalNotes++;
+            updateStats();
+            
+            console.log('🎵 创建音符，轨道:', lane, '总数:', game.notes.length);
+        }
+
+        // 处理画布点击
+        function handleCanvasClick(event) {
+            if (!game.isPlaying || game.waitingForSpace) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const clickLane = Math.floor(x / (canvas.width / 4));
+            
+            game.keyPressEffect.lane = clickLane;
+            game.keyPressEffect.time = Date.now();
+            checkHit(clickLane);
+        }
+
+        // 检查点击判定
+        function checkHit(clickLane) {
+            let hitFound = false;
+            const judgementLineY = getJudgementLineY();
+            const config = JUDGEMENT_CONFIG[game.judgementLevel];
+            
+            for (let i = 0; i < game.notes.length; i++) {
+                const note = game.notes[i];
+                
+                if (note.hit || note.missed) continue;
+                if (note.lane !== clickLane) continue;
+                
+                const distanceToLine = Math.abs(note.position - judgementLineY);
+                
+                if (distanceToLine <= config.perfect) {
+                    processHit(note, 'PERFECT', '#FFD700', SCORE_CONFIG.PERFECT);
+                    hitFound = true;
+                    break;
+                } else if (distanceToLine <= config.great) {
+                    // 判断是EARLY还是LATE
+                    const timing = note.position < judgementLineY ? 'EARLY' : 'LATE';
+                    processHit(note, 'GREAT', '#00FF00', SCORE_CONFIG.GREAT, timing);
+                    hitFound = true;
+                    break;
+                } else if (distanceToLine <= config.good) {
+                    // 判断是EARLY还是LATE
+                    const timing = note.position < judgementLineY ? 'EARLY' : 'LATE';
+                    processHit(note, 'GOOD', '#3498db', SCORE_CONFIG.GOOD, timing);
+                    hitFound = true;
+                    break;
+                }
+            }
+            
+            // 不再在没有命中时自动记录MISS
+            // 只有当音符通过判定区域时才会被标记为MISS
+            
+            game.maxCombo = Math.max(game.maxCombo, game.combo);
+            updateStats();
+        }
+
+        // 处理命中逻辑
+        function processHit(note, judgement, color, score, timing = null) {
+            note.hit = true;
+            note.judgement = judgement;
+            
+            // 如果有timing信息，显示EARLY或LATE
+            if (timing) {
+                showJudgement(judgement, color, timing);
+            } else {
+                showJudgement(judgement, color);
+            }
+            
+            game.score += score;
+            game.combo++;
+            game.hitCount++;
+            
+            if (judgement === 'PERFECT') {
+                game.perfectCount++;
+                playSound('perfect');
+            } else if (judgement === 'GREAT') {
+                game.greatCount++;
+                playSound('great');
+            } else if (judgement === 'GOOD') {
+                game.goodCount++;
+                playSound('good');
+            }
+            
+            updateComboDisplay();
+        }
+
+        // 显示判定效果
+        function showJudgement(text, color, timing = null) {
+            if (timing) {
+                judgementDisplay.innerHTML = `
+                    <div>${text}</div>
+                    <div class="judgement-subtext">${timing}</div>
+                `;
+            } else {
+                judgementDisplay.innerHTML = `<div>${text}</div>`;
+            }
+            
+            judgementDisplay.style.color = color;
+            judgementDisplay.style.opacity = '1';
+            
+            setTimeout(() => {
+                judgementDisplay.style.opacity = '0';
+            }, 500);
+        }
+
+        // 更新连击显示
+        function updateComboDisplay() {
+            if (game.combo > 0) {
+                comboDisplayElement.textContent = game.combo + ' COMBO!';
+                comboDisplayElement.style.opacity = '1';
+                
+                // 根据连击数改变颜色
+                if (game.combo >= 50) {
+                    comboDisplayElement.style.color = '#FF00FF';
+                } else if (game.combo >= 30) {
+                    comboDisplayElement.style.color = '#00FFFF';
+                } else if (game.combo >= 10) {
+                    comboDisplayElement.style.color = '#00FF00';
+                } else {
+                    comboDisplayElement.style.color = '#FFD700';
+                }
+                
+                setTimeout(() => {
+                    comboDisplayElement.style.opacity = '0';
+                }, 1000);
+            }
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            scoreDisplay.textContent = game.score;
+            comboDisplay.textContent = game.combo;
+            maxComboDisplay.textContent = game.maxCombo;
+            perfectCountDisplay.textContent = game.perfectCount;
+            greatCountDisplay.textContent = game.greatCount;
+            goodCountDisplay.textContent = game.goodCount;
+            missCountDisplay.textContent = game.missCount;
+            
+            // 新的准确率计算方式：准确率 = (当前总分 / (已判定音符数 × 100)) × 100
+            const judgedNotes = game.hitCount + game.missCount;
+            let accuracy = 100;
+            
+            if (judgedNotes > 0) {
+                // 每个音符满分是100分，所以已判定音符数的满分是 judgedNotes × 100
+                const maxPossibleScore = judgedNotes * 100;
+                accuracy = (game.score / maxPossibleScore) * 100;
+            }
+            
+            accuracyDisplay.textContent = accuracy.toFixed(1) + '%';
+        }
+
+        // 游戏主循环
+        function gameLoop() {
+            if (!game.isPlaying) return;
+            
+            updateNotes();
+            drawGame();
+            game.animationFrame = requestAnimationFrame(gameLoop);
+        }
+
+        // 更新音符状态
+        function updateNotes() {
+            const judgementLineY = getJudgementLineY();
+            const config = JUDGEMENT_CONFIG[game.judgementLevel];
+            
+            for (let i = game.notes.length - 1; i >= 0; i--) {
+                const note = game.notes[i];
+                note.position += note.speed;
+                
+                // 只有当音符完全通过判定区域且没有被击中时，才标记为MISS
+                if (!note.hit && !note.missed && note.position > judgementLineY + config.good) {
+                    note.missed = true;
+                    note.judgement = 'MISS';
+                    game.combo = 0;
+                    game.missCount++;
+                    updateStats();
+                    updateComboDisplay();
+                }
+                
+                if (note.position > canvas.height + 100) {
+                    game.notes.splice(i, 1);
+                }
+            }
+            
+            if (game.keyPressEffect.lane !== -1) {
+                const pressDuration = Date.now() - game.keyPressEffect.time;
+                if (pressDuration > game.keyPressEffect.duration) {
+                    game.keyPressEffect.lane = -1;
+                }
+            }
+        }
+
+        // 绘制判定区域
+        function drawJudgementArea() {
+            const judgementLineY = getJudgementLineY();
+            const config = JUDGEMENT_CONFIG[game.judgementLevel];
+            
+            // 绘制判定区域背景
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fillRect(0, judgementLineY - config.good, canvas.width, config.good * 2);
+            
+            // 绘制判定线
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            
+            // GOOD 线
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY - config.good);
+            ctx.lineTo(canvas.width, judgementLineY - config.good);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY + config.good);
+            ctx.lineTo(canvas.width, judgementLineY + config.good);
+            ctx.stroke();
+            
+            // GREAT 线
+            ctx.strokeStyle = '#00FF00';
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY - config.great);
+            ctx.lineTo(canvas.width, judgementLineY - config.great);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY + config.great);
+            ctx.lineTo(canvas.width, judgementLineY + config.great);
+            ctx.stroke();
+            
+            // PERFECT 线
+            ctx.strokeStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY - config.perfect);
+            ctx.lineTo(canvas.width, judgementLineY - config.perfect);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY + config.perfect);
+            ctx.lineTo(canvas.width, judgementLineY + config.perfect);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+        }
+
+        // 绘制游戏
+        function drawGame() {
+            if (!ctx) return;
+            
+            // 清空画布
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const laneWidth = canvas.width / 4;
+            const judgementLineY = getJudgementLineY();
+            
+            // 绘制判定区域
+            drawJudgementArea();
+            
+            // 绘制轨道线
+            ctx.strokeStyle = '#4a6572';
+            ctx.lineWidth = 2;
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * laneWidth, 0);
+                ctx.lineTo(i * laneWidth, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 绘制判定线
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, judgementLineY);
+            ctx.lineTo(canvas.width, judgementLineY);
+            ctx.stroke();
+            
+            // 绘制键盘按下效果
+            if (game.keyPressEffect.lane !== -1) {
+                const x = game.keyPressEffect.lane * laneWidth;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fillRect(x, 0, laneWidth, canvas.height);
+                
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                const keyLabels = ['D', 'F', 'J', 'K'];
+                ctx.fillText(keyLabels[game.keyPressEffect.lane], x + laneWidth/2, 30);
+            }
+            
+            // 绘制音符
+            game.notes.forEach(note => {
+                const x = note.lane * laneWidth;
+                
+                if (note.judgement === 'PERFECT') {
+                    ctx.fillStyle = '#FFD700';
+                } else if (note.judgement === 'GREAT') {
+                    ctx.fillStyle = '#00FF00';
+                } else if (note.judgement === 'GOOD') {
+                    ctx.fillStyle = '#3498db';
+                } else if (note.missed) {
+                    ctx.fillStyle = '#e74c3c';
+                } else {
+                    ctx.fillStyle = '#9b59b6';
+                }
+                
+                ctx.fillRect(x + 5, note.position, laneWidth - 10, 40);
+                
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x + 5, note.position, laneWidth - 10, 40);
+                
+                if (note.judgement) {
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(note.judgement, x + laneWidth/2, note.position + 25);
+                }
+            });
+            
+            // 绘制游戏状态
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('BPM: ' + game.bpm, 10, 30);
+            ctx.fillText('流速: ' + game.speed.toFixed(1) + 'x', 10, 55);
+            ctx.fillText('判定: ' + JUDGEMENT_LABELS[game.judgementLevel], 10, 80);
+            
+            // 绘制键盘提示
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = 'bold 18px Arial';
+            const keys = ['D', 'F', 'J', 'K'];
+            for (let i = 0; i < 4; i++) {
+                const x = i * laneWidth + laneWidth / 2;
+                ctx.fillText(keys[i], x, canvas.height - 20);
+            }
+
+            // 绘制等待空格提示
+            if (game.waitingForSpace) {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        // 页面加载完成后初始化游戏
+        window.addEventListener('load', initGame);
+
+        console.log('🎮 全屏音游训练器加载完成');
+    </script>
+</body>
+</html>
