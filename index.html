@@ -97,22 +97,22 @@
             transition: all 0.3s ease;
         }
         
-        #startBtn {
+        #practiceBtn {
             background: #28a745;
             color: white;
         }
         
-        #startBtn:hover {
+        #practiceBtn:hover {
             background: #218838;
         }
         
-        #pauseBtn {
-            background: #ffc107;
-            color: black;
+        #challengeBtn {
+            background: #e74c3c;
+            color: white;
         }
         
-        #pauseBtn:hover {
-            background: #e0a800;
+        #challengeBtn:hover {
+            background: #c0392b;
         }
         
         #resetBtn {
@@ -229,34 +229,6 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        .judgement-visual {
-            height: 20px;
-            background: linear-gradient(90deg, 
-                #e74c3c 0%, 
-                #e74c3c 20%, 
-                #3498db 20%, 
-                #3498db 40%, 
-                #00FF00 40%, 
-                #00FF00 60%, 
-                #FFD700 60%, 
-                #FFD700 80%, 
-                #e74c3c 80%, 
-                #e74c3c 100%);
-            border-radius: 10px;
-            margin-top: 5px;
-            position: relative;
-        }
-        
-        .judgement-center {
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 30px;
-            background: #FFFFFF;
-        }
-
         .start-hint {
             position: absolute;
             top: 50%;
@@ -348,6 +320,187 @@
         .bpm-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
+        }
+        
+        /* 移动端开始按钮 */
+        .mobile-start-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-start-btn:hover {
+            background: #218838;
+        }
+
+        /* 移动端样式 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: absolute;
+                height: 100%;
+                z-index: 30;
+                transform: translateX(0);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.collapsed {
+                transform: translateX(-100%);
+            }
+            
+            #toggleSidebar {
+                left: 0;
+                transform: translateY(-50%);
+                border-radius: 0 5px 5px 0;
+                width: 25px;
+                height: 80px;
+                background: rgba(0, 0, 0, 0.8);
+                z-index: 35;
+            }
+            
+            .sidebar.collapsed + #toggleSidebar {
+                left: 0;
+                transform: translateY(-50%);
+            }
+            
+            .game-stats {
+                flex-wrap: wrap;
+                padding: 5px 10px;
+            }
+            
+            .stat-item {
+                flex: 1 0 25%;
+                margin-bottom: 5px;
+            }
+            
+            .stat-value {
+                font-size: 18px;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .start-hint {
+                padding: 20px;
+                font-size: 18px;
+            }
+            
+            .start-hint h2 {
+                font-size: 22px;
+            }
+            
+            /* 移动端开始按钮在提示框内 */
+            .hint-start-btn {
+                display: block;
+                margin: 20px auto;
+                padding: 12px 25px;
+                background: #28a745;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                pointer-events: auto;
+            }
+        }
+        
+        /* 游戏结束弹窗 */
+        .game-over-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .game-over-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            color: #333;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-over-content h2 {
+            margin-bottom: 20px;
+            color: #dc3545;
+        }
+        
+        .game-over-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .game-over-stat {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .game-over-stat-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .game-over-stat-value {
+            color: #333;
+        }
+        
+        .game-over-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .restart-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .restart-btn:hover {
+            background: #218838;
+        }
+        
+        .close-game-over-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .close-game-over-btn:hover {
+            background: #5a6268;
         }
         
         .sponsor-modal {
@@ -471,106 +624,70 @@
             z-index: 15;
             transition: opacity 0.2s;
         }
-
-        /* 移动端开始按钮 */
-        .mobile-start-btn {
-            display: none;
+        
+        .challenge-info {
             position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
+            top: 80px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #FFD700;
+        }
+        
+        /* 新增样式 */
+        .performance-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ccc;
+        }
+        
+        .hit-effect {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
             z-index: 10;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.3s, transform 0.3s;
         }
-
-        .mobile-start-btn:hover {
-            background: #218838;
+        
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 5;
         }
-
-        /* 移动端样式 */
-        @media (max-width: 768px) {
-            .mobile-start-btn {
-                display: block;
-            }
-            
-            .sidebar {
-                width: 100%;
-                position: absolute;
-                height: 100%;
-                z-index: 30;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
-            #toggleSidebar {
-                left: 0;
-                transform: translateY(-50%);
-                border-radius: 0 5px 5px 0;
-                width: 25px;
-                height: 80px;
-                background: rgba(0, 0, 0, 0.8);
-                z-index: 35;
-            }
-            
-            .sidebar.open + #toggleSidebar {
-                left: 100%;
-                transform: translate(-100%, -50%);
-                border-radius: 5px 0 0 5px;
-            }
-            
-            .game-stats {
-                flex-wrap: wrap;
-                padding: 5px 10px;
-            }
-            
-            .stat-item {
-                flex: 1 0 25%;
-                margin-bottom: 5px;
-            }
-            
-            .stat-value {
-                font-size: 18px;
-            }
-            
-            .stat-label {
-                font-size: 12px;
-            }
-            
-            .start-hint {
-                padding: 20px;
-                font-size: 18px;
-            }
-            
-            .start-hint h2 {
-                font-size: 22px;
-            }
-            
-            /* 移动端开始按钮在提示框内 */
-            .hint-start-btn {
-                display: block;
-                margin: 20px auto;
-                padding: 12px 25px;
-                background: #28a745;
-                color: white;
-                border: none;
-                border-radius: 8px;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                pointer-events: auto;
-            }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #FFD700);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .lane-highlight {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 25%;
+            background: rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.1s;
         }
     </style>
 </head>
@@ -581,7 +698,7 @@
         <div class="control-group">
             <label>BPM（每分钟节拍数）</label>
             <div class="bpm-input-container">
-                <input type="number" id="bpmInput" class="bpm-input" placeholder="60~1200" min="60" max="1200" value="120">
+                <input type="number" id="bpmInput" class="bpm-input" placeholder="60~9999" min="60" max="9999" value="120">
                 <span>BPM</span>
             </div>
         </div>
@@ -598,14 +715,11 @@
         
         <div class="control-group">
             <label>判定区域大小</label>
-            <input type="range" id="judgementSlider" min="1" max="10" value="8" step="1">
+            <input type="range" id="judgementSlider" min="1" max="10" value="5" step="1">
             <div class="value-display">
                 <span>严格</span>
-                <span id="judgementValue">宽松</span>
+                <span id="judgementValue">中等</span>
                 <span>宽松</span>
-            </div>
-            <div class="judgement-visual">
-                <div class="judgement-center"></div>
             </div>
         </div>
         
@@ -619,9 +733,25 @@
             </div>
         </div>
         
+        <div class="control-group">
+            <label>游戏结束条件 (MISS数量)</label>
+            <input type="range" id="missLimitSlider" min="1" max="20" value="5" step="1">
+            <div class="value-display">
+                <span>1</span>
+                <span id="missLimitValue">5</span>
+                <span>20</span>
+            </div>
+            <div style="margin-top: 10px;">
+                <label>
+                    <input type="checkbox" id="enableMissLimit" checked>
+                    启用游戏结束条件
+                </label>
+            </div>
+        </div>
+        
         <div class="button-group">
-            <button id="startBtn">开始训练</button>
-            <button id="pauseBtn">暂停</button>
+            <button id="practiceBtn">训练模式</button>
+            <button id="challengeBtn">挑战模式</button>
             <button id="resetBtn">重置</button>
             <button id="soundToggle">音效: 开启</button>
             <button id="sponsorBtn">赞助支持</button>
@@ -667,11 +797,32 @@
             </div>
         </div>
         
+        <!-- 轨道高亮效果 -->
+        <div class="lane-highlight" id="lane0"></div>
+        <div class="lane-highlight" id="lane1"></div>
+        <div class="lane-highlight" id="lane2"></div>
+        <div class="lane-highlight" id="lane3"></div>
+        
         <canvas id="gameCanvas"></canvas>
         <div class="judgement-display" id="judgementDisplay"></div>
         <div class="combo-display" id="comboDisplay"></div>
         
-        <!-- 移动设备专用开始按钮 -->
+        <!-- 进度条 -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <!-- 挑战模式信息显示 -->
+        <div class="challenge-info" id="challengeInfo" style="display: none;">
+            挑战模式: BPM <span id="currentBPM">240</span>
+        </div>
+        
+        <!-- 性能指示器 -->
+        <div class="performance-indicator" id="performanceIndicator">
+            FPS: 60
+        </div>
+        
+        <!-- 开始下落按钮 - 在所有设备上显示 -->
         <button class="mobile-start-btn" id="mobileStartBtn">开始下落</button>
         
         <div class="start-hint" id="startHint" style="display: none;">
@@ -682,6 +833,66 @@
                 <p>🎯 分数: PERFECT:100 | GREAT:80 | GOOD:60 | MISS:0</p>
                 <p>⏸️ 空格键: 开始/暂停游戏</p>
                 <p id="currentSettings">⚡ BPM: 120 | 流速: 1.0x</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏结束弹窗 -->
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="game-over-content">
+            <h2>游戏结束</h2>
+            <p id="gameOverReason">您的MISS数量已达到设定上限，游戏结束！</p>
+            
+            <div class="game-over-stats">
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">BPM:</span>
+                    <span class="game-over-stat-value" id="gameOverBPM">120</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">方块流速:</span>
+                    <span class="game-over-stat-value" id="gameOverSpeed">1.0x</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">判定区域:</span>
+                    <span class="game-over-stat-value" id="gameOverJudgement">中等</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">分数:</span>
+                    <span class="game-over-stat-value" id="gameOverScore">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">最大连击:</span>
+                    <span class="game-over-stat-value" id="gameOverMaxCombo">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">准确率:</span>
+                    <span class="game-over-stat-value" id="gameOverAccuracy">100%</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">PERFECT:</span>
+                    <span class="game-over-stat-value" id="gameOverPerfect">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">GREAT:</span>
+                    <span class="game-over-stat-value" id="gameOverGreat">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">GOOD:</span>
+                    <span class="game-over-stat-value" id="gameOverGood">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">MISS:</span>
+                    <span class="game-over-stat-value" id="gameOverMiss">0</span>
+                </div>
+                <div class="game-over-stat">
+                    <span class="game-over-stat-label">结束条件:</span>
+                    <span class="game-over-stat-value" id="gameOverEndCondition">5 MISS</span>
+                </div>
+            </div>
+            
+            <div class="game-over-buttons">
+                <button class="restart-btn" id="restartBtn">重新开始</button>
+                <button class="close-game-over-btn" id="closeGameOverBtn">关闭</button>
             </div>
         </div>
     </div>
@@ -720,8 +931,10 @@
         let game = {
             bpm: 120,
             speed: 1.0,
-            judgementLevel: 8,
+            judgementLevel: 5, // 默认中等
             linePosition: 70,
+            missLimit: 5, // 默认5个MISS
+            enableMissLimit: true,
             isPlaying: false,
             notes: [],
             score: 0,
@@ -735,11 +948,10 @@
             missCount: 0,
             noteInterval: null,
             animationFrame: null,
-            keyPressEffect: {
-                lane: -1,
-                time: 0,
-                duration: 100
-            },
+            // 重新设计按键高亮系统
+            keyPressStates: [false, false, false, false], // 每个轨道的按键状态
+            keyPressTimes: [0, 0, 0, 0], // 每个轨道的按键时间
+            keyPressDuration: 100, // 按键高亮持续时间
             waitingForSpace: false,
             soundEnabled: true,
             // 移动端触摸相关
@@ -747,20 +959,41 @@
             currentTouchLane: -1,
             touchFeedback: null,
             // 侧边栏状态
-            sidebarCollapsed: false
+            sidebarCollapsed: false,
+            // 挑战模式相关
+            challengeMode: false,
+            challengeTimer: null,
+            challengeBPM: 240,
+            challengeStartTime: 0, // 挑战模式开始时间
+            // 性能优化相关
+            lastFrameTime: 0,
+            fps: 0,
+            frameCount: 0,
+            // 音符对象池
+            notePool: [],
+            maxPoolSize: 100,
+            // 命中效果
+            hitEffects: [],
+            // 音符生成相关
+            lastNoteTime: 0, // 上次生成音符的时间
+            noteGenerationInterval: 0 // 当前音符生成间隔
         };
 
         // 获取HTML元素
         let canvas, ctx;
         let bpmInput;
-        let speedSlider, judgementSlider, linePositionSlider;
-        let speedValue, judgementValue, linePositionValue;
-        let startBtn, pauseBtn, resetBtn, toggleSidebar, soundToggle, sponsorBtn;
+        let speedSlider, judgementSlider, linePositionSlider, missLimitSlider, enableMissLimitCheckbox;
+        let speedValue, judgementValue, linePositionValue, missLimitValue;
+        let practiceBtn, challengeBtn, resetBtn, toggleSidebar, soundToggle, sponsorBtn;
         let scoreDisplay, comboDisplay, accuracyDisplay, maxComboDisplay;
         let perfectCountDisplay, greatCountDisplay, goodCountDisplay, missCountDisplay;
         let judgementDisplay, startHint, comboDisplayElement, currentSettings;
+        let gameOverModal, restartBtn, closeGameOverBtn;
         let sponsorModal, closeSponsorModal;
         let mobileStartBtn, hintStartBtn;
+        let challengeInfo, currentBPM;
+        let performanceIndicator, progressFill;
+        let laneHighlights = [];
 
         // 音效
         let audioContext;
@@ -774,18 +1007,18 @@
             'KeyK': 3
         };
 
-        // 判定窗口配置
+        // 判定窗口配置 - 调整为更宽松的判定
         const JUDGEMENT_CONFIG = {
-            1: { perfect: 15, great: 30, good: 45 },
-            2: { perfect: 18, great: 36, good: 54 },
-            3: { perfect: 21, great: 42, good: 63 },
-            4: { perfect: 24, great: 48, good: 72 },
-            5: { perfect: 27, great: 54, good: 81 },
-            6: { perfect: 30, great: 60, good: 90 },
-            7: { perfect: 33, great: 66, good: 99 },
-            8: { perfect: 36, great: 72, good: 108 },
-            9: { perfect: 39, great: 78, good: 117 },
-            10: { perfect: 42, great: 84, good: 126 }
+            1: { perfect: 25, great: 50, good: 75 },
+            2: { perfect: 30, great: 60, good: 90 },
+            3: { perfect: 35, great: 70, good: 105 },
+            4: { perfect: 40, great: 80, good: 120 },
+            5: { perfect: 45, great: 90, good: 135 },
+            6: { perfect: 50, great: 100, good: 150 },
+            7: { perfect: 55, great: 110, good: 165 },
+            8: { perfect: 60, great: 120, good: 180 },
+            9: { perfect: 65, great: 130, good: 195 },
+            10: { perfect: 70, great: 140, good: 210 }
         };
 
         // 判定文字描述
@@ -823,15 +1056,18 @@
                 speedSlider = document.getElementById('speedSlider');
                 judgementSlider = document.getElementById('judgementSlider');
                 linePositionSlider = document.getElementById('linePositionSlider');
+                missLimitSlider = document.getElementById('missLimitSlider');
+                enableMissLimitCheckbox = document.getElementById('enableMissLimit');
                 
                 // 获取显示元素
                 speedValue = document.getElementById('speedValue');
                 judgementValue = document.getElementById('judgementValue');
                 linePositionValue = document.getElementById('linePositionValue');
+                missLimitValue = document.getElementById('missLimitValue');
                 
                 // 获取按钮元素
-                startBtn = document.getElementById('startBtn');
-                pauseBtn = document.getElementById('pauseBtn');
+                practiceBtn = document.getElementById('practiceBtn');
+                challengeBtn = document.getElementById('challengeBtn');
                 resetBtn = document.getElementById('resetBtn');
                 toggleSidebar = document.getElementById('toggleSidebar');
                 soundToggle = document.getElementById('soundToggle');
@@ -857,14 +1093,35 @@
                 comboDisplayElement = document.getElementById('comboDisplay');
                 currentSettings = document.getElementById('currentSettings');
                 
+                // 获取挑战模式元素
+                challengeInfo = document.getElementById('challengeInfo');
+                currentBPM = document.getElementById('currentBPM');
+                
+                // 获取游戏结束弹窗元素
+                gameOverModal = document.getElementById('gameOverModal');
+                restartBtn = document.getElementById('restartBtn');
+                closeGameOverBtn = document.getElementById('closeGameOverBtn');
+                
                 // 获取赞助弹窗元素
                 sponsorModal = document.getElementById('sponsorModal');
                 closeSponsorModal = document.getElementById('closeSponsorModal');
+                
+                // 获取性能指示器和进度条
+                performanceIndicator = document.getElementById('performanceIndicator');
+                progressFill = document.getElementById('progressFill');
+                
+                // 获取轨道高亮元素
+                for (let i = 0; i < 4; i++) {
+                    laneHighlights[i] = document.getElementById('lane' + i);
+                }
                 
                 console.log('✅ 所有HTML元素获取成功');
                 
                 // 初始化音效
                 initAudio();
+                
+                // 初始化音符对象池
+                initNotePool();
                 
                 // 设置初始值
                 updateSliderValues();
@@ -881,8 +1138,18 @@
                 // 创建触摸反馈元素
                 createTouchFeedback();
                 
+                // 移动端默认侧边栏打开
+                if (window.innerWidth <= 768) {
+                    const sidebar = document.getElementById('sidebar');
+                    sidebar.classList.remove('collapsed');
+                    toggleSidebar.textContent = '▶';
+                }
+                
                 // 初始绘制
                 drawGame();
+                
+                // 开始FPS计算
+                calculateFPS();
                 
                 console.log('🎉 游戏初始化完成！');
                 
@@ -890,6 +1157,74 @@
                 console.error('❌ 初始化失败:', error);
                 alert('游戏初始化失败: ' + error.message);
             }
+        }
+
+        // 初始化音符对象池
+        function initNotePool() {
+            for (let i = 0; i < game.maxPoolSize; i++) {
+                game.notePool.push({
+                    id: 0,
+                    lane: 0,
+                    position: -50,
+                    speed: 0,
+                    hit: false,
+                    missed: false,
+                    judgement: null,
+                    createTime: 0
+                });
+            }
+        }
+
+        // 从对象池获取音符
+        function getNoteFromPool(lane, speed) {
+            if (game.notePool.length > 0) {
+                const note = game.notePool.pop();
+                note.id = Date.now() + Math.random();
+                note.lane = lane;
+                note.position = -50;
+                note.speed = speed;
+                note.hit = false;
+                note.missed = false;
+                note.judgement = null;
+                note.createTime = Date.now();
+                return note;
+            }
+            // 如果对象池为空，创建新音符
+            return {
+                id: Date.now() + Math.random(),
+                lane: lane,
+                position: -50,
+                speed: speed,
+                hit: false,
+                missed: false,
+                judgement: null,
+                createTime: Date.now()
+            };
+        }
+
+        // 将音符返回到对象池
+        function returnNoteToPool(note) {
+            if (game.notePool.length < game.maxPoolSize) {
+                game.notePool.push(note);
+            }
+        }
+
+        // 计算FPS
+        function calculateFPS() {
+            const now = performance.now();
+            if (game.lastFrameTime) {
+                const delta = now - game.lastFrameTime;
+                game.fps = Math.round(1000 / delta);
+                
+                // 每10帧更新一次显示
+                if (game.frameCount % 10 === 0) {
+                    performanceIndicator.textContent = `FPS: ${game.fps}`;
+                }
+            }
+            game.lastFrameTime = now;
+            game.frameCount++;
+            
+            requestAnimationFrame(calculateFPS);
         }
 
         // 创建触摸反馈元素
@@ -1001,10 +1336,15 @@
             speedValue.textContent = game.speed.toFixed(1) + 'x';
             judgementValue.textContent = JUDGEMENT_LABELS[game.judgementLevel];
             linePositionValue.textContent = game.linePosition + '%';
+            missLimitValue.textContent = game.missLimit;
             
             // 更新开始提示中的设置
             if (currentSettings) {
-                currentSettings.textContent = `⚡ BPM: ${game.bpm} | 流速: ${game.speed.toFixed(1)}x`;
+                if (game.challengeMode) {
+                    currentSettings.textContent = '⚡ 挑战模式 | 流速: ' + game.speed.toFixed(1) + 'x';
+                } else {
+                    currentSettings.textContent = `⚡ BPM: ${game.bpm} | 流速: ${game.speed.toFixed(1)}x`;
+                }
             }
         }
 
@@ -1026,7 +1366,7 @@
 
         // 更新BPM值
         function updateBPM() {
-            let value = sanitizeInput(bpmInput.value, 60, 1200, 120);
+            let value = sanitizeInput(bpmInput.value, 60, 9999, 120);
             game.bpm = value;
             bpmInput.value = value; // 确保显示的是安全值
             updateSliderValues();
@@ -1070,15 +1410,24 @@
                 updateSliderValues();
                 drawGame(); // 立即更新画面
             });
+            
+            missLimitSlider.addEventListener('input', function() {
+                game.missLimit = parseInt(this.value);
+                updateSliderValues();
+            });
+            
+            enableMissLimitCheckbox.addEventListener('change', function() {
+                game.enableMissLimit = this.checked;
+            });
         }
 
         // 设置按钮事件
         function setupButtons() {
-            startBtn.addEventListener('click', startGame);
-            pauseBtn.addEventListener('click', pauseGame);
+            practiceBtn.addEventListener('click', startPracticeMode);
+            challengeBtn.addEventListener('click', startChallengeMode);
             resetBtn.addEventListener('click', resetGame);
             
-            // 移动端开始按钮 - 映射为空格键事件
+            // 开始下落按钮 - 映射为空格键事件
             mobileStartBtn.addEventListener('click', function() {
                 // 创建并触发空格键按下事件
                 const spaceEvent = new KeyboardEvent('keydown', {
@@ -1110,8 +1459,8 @@
                 
                 if (isMobile) {
                     // 移动端：侧边栏滑动
-                    sidebar.classList.toggle('open');
-                    this.textContent = sidebar.classList.contains('open') ? '▶' : '◀';
+                    sidebar.classList.toggle('collapsed');
+                    this.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
                 } else {
                     // 桌面端：侧边栏收起/展开
                     sidebar.classList.toggle('collapsed');
@@ -1150,6 +1499,22 @@
                 if (e.target === sponsorModal) {
                     sponsorModal.style.display = 'none';
                 }
+            });
+            
+            // 游戏结束弹窗按钮
+            restartBtn.addEventListener('click', function() {
+                gameOverModal.style.display = 'none';
+                resetGame();
+                if (game.challengeMode) {
+                    startChallengeMode();
+                } else {
+                    startPracticeMode();
+                }
+            });
+            
+            closeGameOverBtn.addEventListener('click', function() {
+                gameOverModal.style.display = 'none';
+                resetGame();
             });
         }
 
@@ -1213,8 +1578,9 @@
             if (lane < 0 || lane > 3) return;
             
             game.currentTouchLane = lane;
-            game.keyPressEffect.lane = lane;
-            game.keyPressEffect.time = Date.now();
+            // 使用新的按键状态系统
+            game.keyPressStates[lane] = true;
+            game.keyPressTimes[lane] = Date.now();
             
             showTouchFeedback(lane);
             checkHit(lane);
@@ -1245,8 +1611,9 @@
             // 如果移动到新的轨道，触发该轨道的按键
             if (lane !== game.currentTouchLane) {
                 game.currentTouchLane = lane;
-                game.keyPressEffect.lane = lane;
-                game.keyPressEffect.time = Date.now();
+                // 使用新的按键状态系统
+                game.keyPressStates[lane] = true;
+                game.keyPressTimes[lane] = Date.now();
                 
                 showTouchFeedback(lane);
                 checkHit(lane);
@@ -1258,7 +1625,10 @@
             event.preventDefault();
             game.touchActive = false;
             game.currentTouchLane = -1;
-            game.keyPressEffect.lane = -1;
+            // 使用新的按键状态系统 - 清除所有轨道的按键状态
+            for (let i = 0; i < 4; i++) {
+                game.keyPressStates[i] = false;
+            }
             hideTouchFeedback();
         }
 
@@ -1278,6 +1648,14 @@
                     game.waitingForSpace = false;
                     startHint.style.display = 'none';
                     mobileStartBtn.style.display = 'none';
+                    
+                    // 移动端开始训练后自动收起侧边栏
+                    if (window.innerWidth <= 768) {
+                        const sidebar = document.getElementById('sidebar');
+                        sidebar.classList.add('collapsed');
+                        toggleSidebar.textContent = '▶';
+                    }
+                    
                     startNoteGeneration();
                 } else if (game.isPlaying) {
                     console.log('⏸️ 暂停/继续游戏');
@@ -1293,8 +1671,10 @@
             
             const lane = KEY_MAPPING[event.code];
             if (lane !== undefined) {
-                game.keyPressEffect.lane = lane;
-                game.keyPressEffect.time = Date.now();
+                // 使用新的按键状态系统 - 只设置对应轨道的状态
+                game.keyPressStates[lane] = true;
+                game.keyPressTimes[lane] = Date.now();
+                
                 checkHit(lane);
                 event.preventDefault();
             }
@@ -1303,20 +1683,26 @@
         // 处理键盘释放
         function handleKeyUp(event) {
             const lane = KEY_MAPPING[event.code];
-            if (lane !== undefined && game.keyPressEffect.lane === lane) {
-                game.keyPressEffect.lane = -1;
+            if (lane !== undefined) {
+                // 使用新的按键状态系统 - 只清除对应轨道的状态
+                game.keyPressStates[lane] = false;
+                
                 event.preventDefault();
             }
         }
 
         // 计算音符生成间隔
         function calculateNoteInterval() {
-            return (60000 / game.bpm) * 2;
+            const currentBPM = game.challengeMode ? game.challengeBPM : game.bpm;
+            // 确保BPM有效
+            const safeBPM = Math.max(60, Math.min(9999, currentBPM));
+            // 每拍的时间（毫秒），这里使用四分音符间隔
+            return (120000 / safeBPM);
         }
 
-        // 开始游戏
-        function startGame() {
-            console.log('🚀 开始游戏');
+        // 开始训练模式
+        function startPracticeMode() {
+            console.log('🚀 开始训练模式');
             if (game.isPlaying) return;
             
             // 确保BPM是最新的
@@ -1325,27 +1711,63 @@
             resetGameState();
             game.isPlaying = true;
             game.waitingForSpace = true;
+            game.challengeMode = false;
             
             updateStats();
             startHint.style.display = 'block';
             
-            // 显示移动端开始按钮
-            if (window.innerWidth <= 768) {
-                mobileStartBtn.style.display = 'block';
-            }
+            // 显示开始下落按钮
+            mobileStartBtn.style.display = 'block';
+            
+            // 隐藏挑战模式信息
+            challengeInfo.style.display = 'none';
             
             gameLoop();
             
-            startBtn.textContent = "游戏中...";
-            startBtn.disabled = true;
-            pauseBtn.textContent = "暂停";
+            practiceBtn.textContent = "训练中...";
+            practiceBtn.disabled = true;
+            challengeBtn.disabled = false;
             
-            console.log('🔄 游戏循环启动，等待空格键...');
+            console.log('🔄 训练模式启动，等待空格键...');
+        }
+
+        // 开始挑战模式
+        function startChallengeMode() {
+            console.log('🔥 开始挑战模式');
+            if (game.isPlaying) return;
+            
+            resetGameState();
+            game.isPlaying = true;
+            game.waitingForSpace = true;
+            game.challengeMode = true;
+            game.challengeBPM = 240; // 重置为初始值
+            game.challengeStartTime = Date.now(); // 记录挑战开始时间
+            
+            updateStats();
+            startHint.style.display = 'block';
+            
+            // 显示开始下落按钮
+            mobileStartBtn.style.display = 'block';
+            
+            // 显示挑战模式信息
+            challengeInfo.style.display = 'block';
+            currentBPM.textContent = Math.round(game.challengeBPM);
+            
+            gameLoop();
+            
+            challengeBtn.textContent = "挑战中...";
+            challengeBtn.disabled = true;
+            practiceBtn.disabled = false;
+            
+            console.log('🔄 挑战模式启动，等待空格键...');
         }
 
         // 重置游戏状态
         function resetGameState() {
+            // 将所有音符返回到对象池
+            game.notes.forEach(note => returnNoteToPool(note));
             game.notes = [];
+            
             game.score = 0;
             game.combo = 0;
             game.maxCombo = 0;
@@ -1355,24 +1777,51 @@
             game.greatCount = 0;
             game.goodCount = 0;
             game.missCount = 0;
-            game.keyPressEffect.lane = -1;
+            // 重置按键状态
+            for (let i = 0; i < 4; i++) {
+                game.keyPressStates[i] = false;
+            }
             game.waitingForSpace = false;
             game.touchActive = false;
             game.currentTouchLane = -1;
+            game.lastNoteTime = 0;
+            
+            // 清除挑战模式计时器
+            if (game.challengeTimer) {
+                clearInterval(game.challengeTimer);
+                game.challengeTimer = null;
+            }
+            
+            // 隐藏所有轨道高亮
+            laneHighlights.forEach(lane => {
+                lane.style.opacity = '0';
+            });
+            
+            // 重置进度条
+            progressFill.style.width = '0%';
         }
 
         // 开始音符生成
         function startNoteGeneration() {
-            const interval = calculateNoteInterval();
-            console.log('📝 音符生成间隔:', interval + 'ms');
-            
+            // 清除现有的音符生成器
             if (game.noteInterval) {
-                clearInterval(game.noteInterval);
+                clearTimeout(game.noteInterval);
+                game.noteInterval = null;
             }
             
-            game.noteInterval = setInterval(() => {
-                createNote();
-            }, interval);
+            // 立即创建一个音符
+            createNote();
+            
+            // 设置音符生成间隔
+            function scheduleNextNote() {
+                const interval = calculateNoteInterval();
+                game.noteInterval = setTimeout(() => {
+                    createNote();
+                    scheduleNextNote(); // 递归调用以安排下一个音符
+                }, interval);
+            }
+            
+            scheduleNextNote(); // 开始调度音符
         }
 
         // 暂停游戏
@@ -1384,14 +1833,13 @@
             
             if (!game.isPlaying) {
                 if (game.noteInterval) {
-                    clearInterval(game.noteInterval);
+                    clearTimeout(game.noteInterval);
                     game.noteInterval = null;
                 }
-                pauseBtn.textContent = "继续";
             } else {
+                // 游戏继续时重新开始音符生成
                 startNoteGeneration();
                 gameLoop(); // 重新开始游戏循环
-                pauseBtn.textContent = "暂停";
             }
         }
 
@@ -1400,10 +1848,16 @@
             console.log('🔄 重置游戏');
             game.isPlaying = false;
             game.waitingForSpace = false;
+            game.challengeMode = false;
             
             if (game.noteInterval) {
-                clearInterval(game.noteInterval);
+                clearTimeout(game.noteInterval);
                 game.noteInterval = null;
+            }
+            
+            if (game.challengeTimer) {
+                clearInterval(game.challengeTimer);
+                game.challengeTimer = null;
             }
             
             if (game.animationFrame) {
@@ -1417,9 +1871,11 @@
             
             startHint.style.display = 'none';
             mobileStartBtn.style.display = 'none';
-            startBtn.textContent = "开始训练";
-            startBtn.disabled = false;
-            pauseBtn.textContent = "暂停";
+            challengeInfo.style.display = 'none';
+            practiceBtn.textContent = "训练模式";
+            practiceBtn.disabled = false;
+            challengeBtn.textContent = "挑战模式";
+            challengeBtn.disabled = false;
         }
 
         // 重新开始游戏
@@ -1428,25 +1884,24 @@
             if (!game.isPlaying) return;
             
             const wasPlaying = game.isPlaying;
+            const wasChallenge = game.challengeMode;
             resetGame();
             if (wasPlaying) {
-                startGame();
+                if (wasChallenge) {
+                    startChallengeMode();
+                } else {
+                    startPracticeMode();
+                }
             }
         }
 
         // 创建新音符
         function createNote() {
             const lane = Math.floor(Math.random() * 4);
-            const note = {
-                id: Date.now() + Math.random(),
-                lane: lane,
-                position: -50,
-                speed: 2 + (game.speed * 3),
-                hit: false,
-                missed: false,
-                judgement: null,
-                createTime: Date.now()
-            };
+            // 音符速度只基于用户设定的流速，不随BPM变化
+            const adjustedSpeed = 2 + (game.speed * 3);
+            
+            const note = getNoteFromPool(lane, adjustedSpeed);
             game.notes.push(note);
             game.totalNotes++;
             updateStats();
@@ -1473,8 +1928,10 @@
             // 确保lane在有效范围内
             if (clickLane < 0 || clickLane > 3) return;
             
-            game.keyPressEffect.lane = clickLane;
-            game.keyPressEffect.time = Date.now();
+            // 使用新的按键状态系统
+            game.keyPressStates[clickLane] = true;
+            game.keyPressTimes[clickLane] = Date.now();
+            
             checkHit(clickLane);
         }
 
@@ -1530,6 +1987,9 @@
                 showJudgement(judgement, color);
             }
             
+            // 显示命中效果
+            showHitEffect(note.lane, note.position);
+            
             game.score += score;
             game.combo++;
             game.hitCount++;
@@ -1546,6 +2006,34 @@
             }
             
             updateComboDisplay();
+        }
+
+        // 显示命中效果
+        function showHitEffect(lane, y) {
+            const laneWidth = canvas.width / 4;
+            const x = lane * laneWidth + laneWidth / 2;
+            
+            const effect = document.createElement('div');
+            effect.className = 'hit-effect';
+            effect.style.left = (x - 30) + 'px';
+            effect.style.top = (y - 30) + 'px';
+            document.querySelector('.game-area').appendChild(effect);
+            
+            // 触发动画
+            setTimeout(() => {
+                effect.style.opacity = '1';
+                effect.style.transform = 'scale(1.5)';
+            }, 10);
+            
+            // 移除效果
+            setTimeout(() => {
+                effect.style.opacity = '0';
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 300);
+            }, 300);
         }
 
         // 显示判定效果
@@ -1611,11 +2099,83 @@
             }
             
             accuracyDisplay.textContent = accuracy.toFixed(1) + '%';
+            
+            // 更新进度条
+            if (game.enableMissLimit) {
+                const progress = (game.missCount / game.missLimit) * 100;
+                progressFill.style.width = Math.min(progress, 100) + '%';
+                
+                // 根据进度改变颜色
+                if (progress > 80) {
+                    progressFill.style.background = 'linear-gradient(90deg, #dc3545, #ff6b6b)';
+                } else if (progress > 60) {
+                    progressFill.style.background = 'linear-gradient(90deg, #fd7e14, #ffa94d)';
+                } else {
+                    progressFill.style.background = 'linear-gradient(90deg, #28a745, #FFD700)';
+                }
+            }
+            
+            // 检查游戏结束条件
+            if (game.enableMissLimit && game.missCount >= game.missLimit) {
+                gameOver('miss');
+            }
+        }
+
+        // 游戏结束
+        function gameOver(reason) {
+            console.log('🎮 游戏结束');
+            game.isPlaying = false;
+            
+            if (game.noteInterval) {
+                clearTimeout(game.noteInterval);
+                game.noteInterval = null;
+            }
+            
+            if (game.challengeTimer) {
+                clearInterval(game.challengeTimer);
+                game.challengeTimer = null;
+            }
+            
+            if (game.animationFrame) {
+                cancelAnimationFrame(game.animationFrame);
+                game.animationFrame = null;
+            }
+            
+            // 更新游戏结束弹窗数据
+            document.getElementById('gameOverBPM').textContent = game.challengeMode ? Math.round(game.challengeBPM) : game.bpm;
+            document.getElementById('gameOverSpeed').textContent = game.speed.toFixed(1) + 'x';
+            document.getElementById('gameOverJudgement').textContent = JUDGEMENT_LABELS[game.judgementLevel];
+            document.getElementById('gameOverScore').textContent = game.score;
+            document.getElementById('gameOverMaxCombo').textContent = game.maxCombo;
+            document.getElementById('gameOverAccuracy').textContent = accuracyDisplay.textContent;
+            document.getElementById('gameOverPerfect').textContent = game.perfectCount;
+            document.getElementById('gameOverGreat').textContent = game.greatCount;
+            document.getElementById('gameOverGood').textContent = game.goodCount;
+            document.getElementById('gameOverMiss').textContent = game.missCount;
+            document.getElementById('gameOverEndCondition').textContent = game.missLimit + ' MISS';
+            
+            // 设置游戏结束原因
+            if (reason === 'miss') {
+                document.getElementById('gameOverReason').textContent = '您的MISS数量已达到设定上限，游戏结束！';
+            }
+            
+            // 显示游戏结束弹窗
+            gameOverModal.style.display = 'flex';
         }
 
         // 游戏主循环
         function gameLoop() {
             if (!game.isPlaying) return;
+            
+            // 更新挑战模式BPM（连续平滑增加）
+            if (game.challengeMode && game.isPlaying && !game.waitingForSpace) {
+                // 计算从挑战开始经过的时间（秒）
+                const elapsedSeconds = (Date.now() - game.challengeStartTime) / 1000;
+                // 每秒增加10BPM
+                game.challengeBPM = 240 + (elapsedSeconds * 10);
+                if (game.challengeBPM > 9999) game.challengeBPM = 9999;
+                currentBPM.textContent = Math.round(game.challengeBPM);
+            }
             
             updateNotes();
             drawGame();
@@ -1642,14 +2202,16 @@
                 }
                 
                 if (note.position > canvas.height + 100) {
+                    returnNoteToPool(game.notes[i]);
                     game.notes.splice(i, 1);
                 }
             }
             
-            if (game.keyPressEffect.lane !== -1) {
-                const pressDuration = Date.now() - game.keyPressEffect.time;
-                if (pressDuration > game.keyPressEffect.duration) {
-                    game.keyPressEffect.lane = -1;
+            // 更新按键高亮状态 - 检查每个轨道的按键持续时间
+            const now = Date.now();
+            for (let i = 0; i < 4; i++) {
+                if (game.keyPressStates[i] && (now - game.keyPressTimes[i] > game.keyPressDuration)) {
+                    game.keyPressStates[i] = false;
                 }
             }
         }
@@ -1738,17 +2300,19 @@
             ctx.lineTo(canvas.width, judgementLineY);
             ctx.stroke();
             
-            // 绘制键盘按下效果
-            if (game.keyPressEffect.lane !== -1) {
-                const x = game.keyPressEffect.lane * laneWidth;
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                ctx.fillRect(x, 0, laneWidth, canvas.height);
-                
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 20px Arial';
-                ctx.textAlign = 'center';
-                const keyLabels = ['D', 'F', 'J', 'K'];
-                ctx.fillText(keyLabels[game.keyPressEffect.lane], x + laneWidth/2, 30);
+            // 绘制键盘按下效果 - 使用新的按键状态系统
+            for (let i = 0; i < 4; i++) {
+                if (game.keyPressStates[i]) {
+                    const x = i * laneWidth;
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.fillRect(x, 0, laneWidth, canvas.height);
+                    
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    const keyLabels = ['D', 'F', 'J', 'K'];
+                    ctx.fillText(keyLabels[i], x + laneWidth/2, 30);
+                }
             }
             
             // 绘制音符
@@ -1785,7 +2349,7 @@
             ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
             ctx.font = '16px Arial';
             ctx.textAlign = 'left';
-            ctx.fillText('BPM: ' + game.bpm, 10, 30);
+            ctx.fillText('BPM: ' + (game.challengeMode ? Math.round(game.challengeBPM) : game.bpm), 10, 30);
             ctx.fillText('流速: ' + game.speed.toFixed(1) + 'x', 10, 55);
             ctx.fillText('判定: ' + JUDGEMENT_LABELS[game.judgementLevel], 10, 80);
             
